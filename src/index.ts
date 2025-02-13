@@ -5,11 +5,22 @@ import path from 'path';
 const app = express();
 const port = 3000; 
 
+// serve static files
 app.use(express.static(path.join(__dirname))); 
+
+// configure multer with better storage
+const storage = multer.diskStorage({
+    destination: 'uploads/', 
+    filename: (req, file, cb) => {
+        const timestamp = Date.now();
+        const originalName = file.originalname;
+        cb(null, `beat_${timestamp}_${originalName}`);
+    }
+});
 
 // configure multer for .wav files
 const upload = multer({
-    dest: 'uploads/', 
+    storage: storage,
     fileFilter: (req, file, cb) => {
         console.log('Incoming file:', file);
         const ext = path.extname(file.originalname).toLowerCase();
